@@ -18,36 +18,83 @@
             margin-top: 40px;
             font-size: 70px;
             letter-spacing: 6px;
-            text-shadow: 0 0 20px #00aaff;
+            text-shadow: 0 0 25px #00eaff;
             position: relative;
             z-index: 10;
         }
 
-        /* Wellen-Hintergrund */
+        /* Partikel-Hintergrund */
         canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: -2;
+        }
+
+        /* Hinweisfenster */
+        .info-box {
+            position: absolute;
+            top: 260px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 420px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #00eaff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #00eaff;
+            font-size: 18px;
+            backdrop-filter: blur(6px);
+        }
+
+        /* Dankestext */
+        .thanks {
+            position: absolute;
+            top: 170px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 22px;
+            color: #9ffcff;
+            text-shadow: 0 0 10px #00eaff;
+        }
+
+        /* SCHWEBENDER GAY-KASTEN */
+        .funbox {
+            position: absolute;
+            padding: 12px 25px;
+            background: rgba(255, 0, 200, 0.15);
+            border: 2px solid #ff00c8;
+            border-radius: 10px;
+            color: #ff5bf7;
+            font-size: 20px;
+            text-shadow: 0 0 10px #ff00c8;
+            box-shadow: 0 0 15px #ff00c8;
+            animation: blink 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.7; transform: rotate(-3deg); }
+            100% { opacity: 1; transform: rotate(3deg); }
         }
 
         /* Download Button */
         .download-btn {
             position: absolute;
             padding: 15px 40px;
-            border: 2px solid #00aaff;
-            color: #00aaff;
+            border: 2px solid #00eaff;
+            color: #00eaff;
             text-decoration: none;
             font-size: 22px;
             border-radius: 6px;
-            box-shadow: 0 0 15px #00aaff;
+            box-shadow: 0 0 15px #00eaff;
             transition: 0.2s;
+            backdrop-filter: blur(4px);
         }
 
         .download-btn:hover {
-            background: #00aaff;
+            background: #00eaff;
             color: #000;
         }
     </style>
@@ -66,56 +113,73 @@
 
 <h1>j-gui</h1>
 
-<canvas id="waves"></canvas>
+<div class="thanks">Danke für den Kauf und dein Vertrauen</div>
 
+<!-- SCHWEBENDER TEXT-KASTEN -->
+<div id="funbox" class="funbox">
+    GAY WER FÜR SCHULE LERNT UND SPIELE BEZAHLT
+</div>
+
+<!-- Hinweisfenster -->
+<div class="info-box">
+    Datei mit <b>7‑Zip</b> entpacken.<br>
+    Passwort bitte beim Besitzer anfragen.
+</div>
+
+<!-- Partikel Hintergrund -->
+<canvas id="particles"></canvas>
+
+<!-- Download Button -->
 <a id="download" class="download-btn" href="DEIN-DOWNLOAD-LINK" download>Download</a>
 
 <script>
-    /* -------------------------
-       Wellen-Animation
-    --------------------------*/
-    const canvas = document.getElementById("waves");
+    /* Partikel Animation */
+    const canvas = document.getElementById("particles");
     const ctx = canvas.getContext("2d");
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let t = 0;
+    const particles = [];
 
-    function drawWaves() {
+    for (let i = 0; i < 120; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 3 + 1,
+            dx: (Math.random() - 0.5) * 0.6,
+            dy: (Math.random() - 0.5) * 0.6
+        });
+    }
+
+    function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        for (let i = 0; i < 3; i++) {
+        particles.forEach(p => {
             ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2);
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0, 234, 255, 0.8)";
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#00eaff";
+            ctx.fill();
 
-            for (let x = 0; x < canvas.width; x++) {
-                const y =
-                    Math.sin((x + t + i * 200) * 0.01) * 40 +
-                    Math.sin((x + t * 1.5 + i * 300) * 0.02) * 20 +
-                    canvas.height / 2;
+            p.x += p.dx;
+            p.y += p.dy;
 
-                ctx.lineTo(x, y);
-            }
+            if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+        });
 
-            ctx.strokeStyle = `rgba(0, 170, 255, ${0.3 - i * 0.08})`;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
-
-        t += 2;
-        requestAnimationFrame(drawWaves);
+        requestAnimationFrame(animate);
     }
-    drawWaves();
+    animate();
 
-    /* -------------------------
-       Bewegender Download-Button
-    --------------------------*/
+    /* Bewegender Download Button */
     let btn = document.getElementById("download");
-    let x = 100, y = 200;
+    let x = 100, y = 350;
     let vx = 1.2, vy = 0.8;
 
-    function move() {
+    function moveBtn() {
         x += vx;
         y += vy;
 
@@ -125,9 +189,28 @@
         btn.style.left = x + "px";
         btn.style.top = y + "px";
 
-        requestAnimationFrame(move);
+        requestAnimationFrame(moveBtn);
     }
-    move();
+    moveBtn();
+
+    /* SCHWEBENDER FUNBOX-KASTEN */
+    let box = document.getElementById("funbox");
+    let bx = 300, by = 120;
+    let bvx = 1.0, bvy = 0.7;
+
+    function moveBox() {
+        bx += bvx;
+        by += bvy;
+
+        if (bx < 0 || bx > window.innerWidth - 450) bvx *= -1;
+        if (by < 0 || by > window.innerHeight - 120) bvy *= -1;
+
+        box.style.left = bx + "px";
+        box.style.top = by + "px";
+
+        requestAnimationFrame(moveBox);
+    }
+    moveBox();
 </script>
 
 </body>
