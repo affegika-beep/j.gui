@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Private Access</title>
+
+<style>
+:root {
+    --neon: #00f7ff;
+    --pink: #ff00cc;
+    --bg: #05070d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ===== LIVE WALLPAPER ===== */
+canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+}
+
+/* ===== LOCKSCREEN ===== */
+#lockscreen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.lockbox {
+    background: linear-gradient(145deg, #0b1020, #060913);
+    padding: 45px;
+    border-radius: 18px;
+    box-shadow: 0 0 60px rgba(0,247,255,0.2);
+    width: 340px;
+    text-align: center;
+    animation: fadeIn 1.2s ease;
+}
+
+.lockbox h1 {
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+.lockbox input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: #131a33;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.lockbox button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--neon), #0066ff);
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.error {
+    margin-top: 10px;
+    color: #ff4d4d;
+    display: none;
+    font-size: 13px;
+}
+
+.lockbox p {
+    margin-top: 15px;
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* ===== CONTENT ===== */
+#content {
+    display: none;
+    height: 100%;
+    padding-top: 40px;
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+.title {
+    font-size: 32px;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+}
+
+/* ===== BUTTONS ===== */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.box {
+    width: 220px;
+    height: 140px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 25px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.box:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 0 30px rgba(0,247,255,0.4);
+}
+
+.box h2 {
+    margin-top: 30px;
+    letter-spacing: 1px;
+}
+
+.box span {
+    font-size: 13px;
+    opacity: 0.6;
+}
+
+/* ===== MEME ===== */
+#meme {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 18px 30px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    letter-spacing: 1px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1;}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+<!-- ===== LOCK ===== -->
+<div id="lockscreen">
+    <div class="lockbox">
+        <h1>ACCESS</h1>
+        <input type="password" id="pw" placeholder="Passwort">
+        <button onclick="checkPW()">ENTER</button>
+        <div class="error" id="error">Falsches Passwort</div>
+        <p>Passwort beim Besitzer anfragen</p>
+    </div>
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div id="content">
+    <div class="title">PRIVATE AREA</div>
+
+    <div class="buttons">
+        <div class="box" onclick="openLink('https://gofile.io/d/CDAOhJ')">
+            <h2>DOWNLOAD first version  1</h2>
+            <span>artofrally,assettocorsa,bigfoot,gangbeast,humanfallflat,raft,rv there yet,schedule1,tinyglade</span>
+        </div>
+
+        <div class="box" onclick="openLink('https://gofile.io/d/LINK2')">
+            <h2>DOWNLOAD 2</h2>
+            <span>coming soon</span>
+        </div>
+
+        <div class="box" onclick="openLink('https://gofile.io/d/LINK3')">
+            <h2>DOWNLOAD 3</h2>
+            <span>coming soon</span>
+        </div>
+
+        <div class="box" onclick="openLink('https://gofile.io/d/LINK4')">
+            <h2>DOWNLOAD 4</h2>
+            <span>coming soon</span>
+        </div>
+    </div>
+</div>
+
+<div id="meme">GAY WER FÜR SCHULE LERNT</div>
+
+<!-- ===== MUSIC ===== -->
+<audio id="music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* ===== PASSWORT ===== */
+const PASSWORD = "JBITTORRENT";
+
+function checkPW() {
+    if (pw.value === PASSWORD) {
+        lockscreen.style.display = "none";
+        content.style.display = "block";
+        music.volume = 0.25;
+        music.play();
+    } else {
+        error.style.display = "block";
+    }
+}
+
+/* ===== LINKS ===== */
+function openLink(url) {
+    window.open(url, "_blank");
+}
+
+/* ===== LIVE WALLPAPER ===== */
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let dots = Array.from({length:120}, () => ({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    vx:(Math.random()-0.5)*0.4,
+    vy:(Math.random()-0.5)*0.4
+}));
+
+function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    dots.forEach(d=>{
+        d.x+=d.vx; d.y+=d.vy;
+        if(d.x<0||d.x>canvas.width) d.vx*=-1;
+        if(d.y<0||d.y>canvas.height) d.vy*=-1;
+        ctx.fillStyle="rgba(0,247,255,0.6)";
+        ctx.fillRect(d.x,d.y,2,2);
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
